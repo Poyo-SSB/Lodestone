@@ -5,19 +5,22 @@ namespace Lodestone.Nbt
 {
     public class TagByte : Tag
     {
-        public TagByte(EndiannessAwareBinaryReader reader, bool readNames) => this.Read(reader, readNames);
-
+        public override TagType Type => TagType.TAG_Byte;
         public sbyte Value { get; private set; }
 
-        protected override void Read(EndiannessAwareBinaryReader reader, bool readName)
+        public TagByte(EndiannessAwareBinaryReader reader, bool readNames) => this.Read(reader, readNames);
+
+        public override void Read(EndiannessAwareBinaryReader reader, bool readName)
         {
-            if (readName)
-            {
-                ushort nameLength = reader.ReadUInt16();
-                this.Name = Encoding.UTF8.GetString(reader.ReadBytes(nameLength));
-            }
+            base.Read(reader, readName);
 
             this.Value = reader.ReadSByte();
+        }
+
+        public override void Write(EndiannessAwareBinaryWriter writer, bool writeName)
+        {
+            base.Write(writer, writeName);
+            writer.Write(this.Value);
         }
     }
 }

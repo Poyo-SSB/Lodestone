@@ -5,26 +5,25 @@ namespace Lodestone.Nbt
 {
     public class TagList : Tag
     {
-        public TagList(EndiannessAwareBinaryReader reader, bool readNames) => this.Read(reader, readNames);
+        public override TagType Type => TagType.TAG_List;
 
+        public TagType ListType { get; private set; }
         private Tag[] value;
 
-        protected override void Read(EndiannessAwareBinaryReader reader, bool readName)
-        {
-            if (readName)
-            {
-                ushort nameLength = reader.ReadUInt16();
-                this.Name = Encoding.UTF8.GetString(reader.ReadBytes(nameLength));
-            }
+        public TagList(EndiannessAwareBinaryReader reader, bool readNames) => this.Read(reader, readNames);
 
-            var type = (TagType)reader.ReadByte();
+        public override void Read(EndiannessAwareBinaryReader reader, bool readName)
+        {
+            base.Read(reader, readName);
+
+            this.ListType = (TagType)reader.ReadByte();
             int length = reader.ReadInt32();
 
             this.value = new Tag[length];
 
             for (int i = 0; i < length; i++)
             {
-                switch (type)
+                switch (this.ListType)
                 {
                     case TagType.TAG_Byte:
                         this.value[i] = new TagByte(reader, false);
@@ -63,6 +62,18 @@ namespace Lodestone.Nbt
                         this.value[i] = new TagLongArray(reader, false);
                         break;
                 }
+            }
+        }
+
+        public override void Write(EndiannessAwareBinaryWriter writer, bool writeName)
+        {
+            base.Write(writer, writeName);
+            writer.Write((byte)this.ListType);
+            writer.Write(this.value.Length);
+
+            for (int i = 0; i < this.value.Length; i++)
+            {
+                this.value[i].Write(writer, false);
             }
         }
 

@@ -5,17 +5,14 @@ namespace Lodestone.Nbt
 {
     public class TagByteArray : Tag
     {
-        public TagByteArray(EndiannessAwareBinaryReader reader, bool readNames) => this.Read(reader, readNames);
-
+        public override TagType Type => TagType.TAG_Byte_Array;
         public sbyte[] Value { get; private set; }
 
-        protected override void Read(EndiannessAwareBinaryReader reader, bool readName)
+        public TagByteArray(EndiannessAwareBinaryReader reader, bool readNames) => this.Read(reader, readNames);
+
+        public override void Read(EndiannessAwareBinaryReader reader, bool readName)
         {
-            if (readName)
-            {
-                ushort nameLength = reader.ReadUInt16();
-                this.Name = Encoding.UTF8.GetString(reader.ReadBytes(nameLength));
-            }
+            base.Read(reader, readName);
 
             int length = reader.ReadInt32();
             this.Value = new sbyte[length];
@@ -23,6 +20,17 @@ namespace Lodestone.Nbt
             for (int i = 0; i < length; i++)
             {
                 this.Value[i] = reader.ReadSByte();
+            }
+        }
+
+        public override void Write(EndiannessAwareBinaryWriter writer, bool writeName)
+        {
+            base.Write(writer, writeName);
+            writer.Write(this.Value.Length);
+
+            for (int i = 0; i < this.Value.Length; i++)
+            {
+                writer.Write(this.Value[i]);
             }
         }
     }

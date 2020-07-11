@@ -1,4 +1,5 @@
 ﻿using Lodestone.Utility;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -10,6 +11,7 @@ namespace Lodestone.Nbt
     {
         private readonly Dictionary<string, Tag> children = new Dictionary<string, Tag>();
 
+        public override TagType Type => TagType.TAG_Compound;
         public int Count => this.children.Count;
 
         public TagCompound(string file)
@@ -21,7 +23,7 @@ namespace Lodestone.Nbt
                 bytes = DecompressGzip(bytes);
             }
 
-            var reader = new EndiannessAwareBinaryReader(new MemoryStream(bytes), Endianness.Big);
+            using var reader = new EndiannessAwareBinaryReader(new MemoryStream(bytes), Endianness.Big);
 
             var type = (TagType)reader.ReadByte();
             if (type != TagType.TAG_Compound)
@@ -34,13 +36,9 @@ namespace Lodestone.Nbt
 
         public TagCompound(EndiannessAwareBinaryReader reader, bool readNames) => this.Read(reader, readNames);
 
-        protected override void Read(EndiannessAwareBinaryReader reader, bool readName)
+        public override void Read(EndiannessAwareBinaryReader reader, bool readName)
         {
-            if (readName)
-            {
-                ushort nameLength = reader.ReadUInt16();
-                this.Name = Encoding.UTF8.GetString(reader.ReadBytes(nameLength));
-            }
+            base.Read(reader, readName);
 
             TagType nextType;
             while ((nextType = (TagType)reader.ReadByte()) != TagType.TAG_End)
@@ -88,6 +86,18 @@ namespace Lodestone.Nbt
 
                 this.children.Add(nextTag.Name, nextTag);
             }
+        }
+
+        public override void Write(EndiannessAwareBinaryWriter writer, bool writeName)
+        {
+            base.Write(writer, writeName);
+
+            foreach (var child in this.children)
+            {
+                child.Value.Write(writer, true);
+            }
+
+            writer.Write((byte)TagType.TAG_End);
         }
 
         public TagByte GetByte(string name) => (TagByte)this.children[name];

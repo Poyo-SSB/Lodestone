@@ -15,25 +15,16 @@ namespace Lodestone.Utility
         public EndiannessAwareBinaryReader(Stream input, Encoding encoding, Endianness endianness) : base(input, encoding) => this.endianness = endianness;
         public EndiannessAwareBinaryReader(Stream input, Encoding encoding, bool leaveOpen, Endianness endianness) : base(input, encoding, leaveOpen) => this.endianness = endianness;
 
-        public override short ReadInt16() => this.ReadInt16(this.endianness);
-        public override int ReadInt32() => this.ReadInt32(this.endianness);
-        public override long ReadInt64() => this.ReadInt64(this.endianness);
-        public override ushort ReadUInt16() => this.ReadUInt16(this.endianness);
-        public override uint ReadUInt32() => this.ReadUInt32(this.endianness);
-        public override ulong ReadUInt64() => this.ReadUInt64(this.endianness);
-        public override float ReadSingle() => this.ReadSingle(this.endianness);
-        public override double ReadDouble() => this.ReadDouble(this.endianness);
+        public override short ReadInt16() => BitConverter.ToInt16(this.ReadWithEndianness(sizeof(short), this.endianness));
+        public override int ReadInt32() => BitConverter.ToInt32(this.ReadWithEndianness(sizeof(int), this.endianness));
+        public override long ReadInt64() => BitConverter.ToInt64(this.ReadWithEndianness(sizeof(long), this.endianness));
+        public override ushort ReadUInt16() => BitConverter.ToUInt16(this.ReadWithEndianness(sizeof(ushort), this.endianness));
+        public override uint ReadUInt32() => BitConverter.ToUInt32(this.ReadWithEndianness(sizeof(uint), this.endianness));
+        public override ulong ReadUInt64() => BitConverter.ToUInt64(this.ReadWithEndianness(sizeof(ulong), this.endianness));
+        public override float ReadSingle() => BitConverter.ToSingle(this.ReadWithEndianness(sizeof(float), this.endianness));
+        public override double ReadDouble() => BitConverter.ToDouble(this.ReadWithEndianness(sizeof(double), this.endianness));
 
-        public short ReadInt16(Endianness endianness) => BitConverter.ToInt16(this.ReadForEndianness(sizeof(short), endianness));
-        public int ReadInt32(Endianness endianness) => BitConverter.ToInt32(this.ReadForEndianness(sizeof(int), endianness));
-        public long ReadInt64(Endianness endianness) => BitConverter.ToInt64(this.ReadForEndianness(sizeof(long), endianness));
-        public ushort ReadUInt16(Endianness endianness) => BitConverter.ToUInt16(this.ReadForEndianness(sizeof(ushort), endianness));
-        public uint ReadUInt32(Endianness endianness) => BitConverter.ToUInt32(this.ReadForEndianness(sizeof(uint), endianness));
-        public ulong ReadUInt64(Endianness endianness) => BitConverter.ToUInt64(this.ReadForEndianness(sizeof(ulong), endianness));
-        public float ReadSingle(Endianness endianness) => BitConverter.ToSingle(this.ReadForEndianness(sizeof(float), endianness));
-        public double ReadDouble(Endianness endianness) => BitConverter.ToDouble(this.ReadForEndianness(sizeof(double), endianness));
-
-        private byte[] ReadForEndianness(int bytesToRead, Endianness endianness)
+        private byte[] ReadWithEndianness(int bytesToRead, Endianness endianness)
         {
             byte[] bytesRead = this.ReadBytes(bytesToRead);
 

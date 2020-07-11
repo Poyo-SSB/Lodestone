@@ -1,28 +1,28 @@
 using Lodestone.Nbt;
+using Lodestone.Utility;
 using NUnit.Framework;
-using System;
 using System.IO;
 
 namespace Lodestone.Tests
 {
     [TestFixture]
-    public class Tests
+    public class NbtTest
     {
-        private TagCompound nbtCompound;
-        private TagCompound nbtCompoundGzipped;
-
-        [SetUp]
-        public void Setup()
+        [Test]
+        public void NbtReadTest()
         {
-            this.nbtCompound = new TagCompound(@"./Resources/test.dat");
-            this.nbtCompoundGzipped = new TagCompound(@"./Resources/test_gzip.dat");
+            this.TestNbt(new TagCompound(@"./Resources/test.dat"));
+            this.TestNbt(new TagCompound(@"./Resources/test_gzip.dat"));
         }
 
         [Test]
-        public void NbtTest()
+        public void NbtWriteTest()
         {
-            this.TestNbt(this.nbtCompound);
-            this.TestNbt(this.nbtCompoundGzipped);
+            using (var writer = new EndiannessAwareBinaryWriter(File.Open(@"./Resources/test_write.dat", FileMode.Create), Endianness.Big))
+            {
+                new TagCompound(@"./Resources/test.dat").Write(writer, true);
+            }
+            this.TestNbt(new TagCompound(@"./Resources/test_write.dat"));
         }
 
         private void TestNbt(TagCompound compoundTag)
