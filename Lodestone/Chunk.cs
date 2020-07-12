@@ -9,6 +9,9 @@
         public int X { get; }
         public int Z { get; }
 
+        public int RegionX => this.X >> 5;
+        public int RegionZ => this.Z >> 5;
+
         internal Chunk(int x, int z)
         {
             this.X = x;

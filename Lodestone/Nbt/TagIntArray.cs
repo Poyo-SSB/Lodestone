@@ -1,14 +1,18 @@
 ﻿using Lodestone.Utility;
-using System.Text;
 
 namespace Lodestone.Nbt
 {
     public class TagIntArray : Tag
     {
-        public int[] Value { get; private set; }
+        public int[] Value { get; set; }
         public override TagType Type => TagType.TAG_Int_Array;
         
         public TagIntArray(EndiannessAwareBinaryReader reader, bool readNames) => this.Read(reader, readNames);
+        public TagIntArray(string name, int[] value)
+        {
+            this.Name = name;
+            this.Value = value;
+        }
 
         public override void Read(EndiannessAwareBinaryReader reader, bool readName)
         {

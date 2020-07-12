@@ -5,10 +5,15 @@ namespace Lodestone.Nbt
 {
     public class TagString : Tag
     {
-        public string Value { get; private set; }
+        public string Value { get; set; }
         public override TagType Type => TagType.TAG_String;
 
         public TagString(EndiannessAwareBinaryReader reader, bool readNames) => this.Read(reader, readNames);
+        public TagString(string name, string value)
+        {
+            this.Name = name;
+            this.Value = value;
+        }
 
         public override void Read(EndiannessAwareBinaryReader reader, bool readName)
         {

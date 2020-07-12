@@ -1,14 +1,18 @@
 ﻿using Lodestone.Utility;
-using System.Text;
 
 namespace Lodestone.Nbt
 {
     public class TagFloat : Tag
     {
-        public float Value { get; private set; }
+        public float Value { get; set; }
         public override TagType Type => TagType.TAG_Float;
 
         public TagFloat(EndiannessAwareBinaryReader reader, bool readNames) => this.Read(reader, readNames);
+        public TagFloat(string name, float value)
+        {
+            this.Name = name;
+            this.Value = value;
+        }
 
         public override void Read(EndiannessAwareBinaryReader reader, bool readName)
         {

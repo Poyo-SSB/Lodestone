@@ -1,12 +1,11 @@
 using Lodestone.Nbt;
-using Lodestone.Utility;
 using NUnit.Framework;
 using System.IO;
 
 namespace Lodestone.Tests
 {
     [TestFixture]
-    public class NbtTest
+    public class NbtTests
     {
         [Test]
         public void NbtReadTest()
@@ -18,9 +17,9 @@ namespace Lodestone.Tests
         [Test]
         public void NbtWriteTest()
         {
-            using (var writer = new EndiannessAwareBinaryWriter(File.Open(@"./Resources/test_write.dat", FileMode.Create), Endianness.Big))
+            using (var stream = File.Open(@"./Resources/test_write.dat", FileMode.Create))
             {
-                new TagCompound(@"./Resources/test.dat").Write(writer, true);
+                new TagCompound(@"./Resources/test.dat").Write(stream);
             }
             this.TestNbt(new TagCompound(@"./Resources/test_write.dat"));
         }

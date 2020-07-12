@@ -3,6 +3,6 @@
     public enum Endianness
     {
         Little,
-        Big,
+        Big
     }
 }

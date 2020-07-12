@@ -1,14 +1,18 @@
 ﻿using Lodestone.Utility;
-using System.Text;
 
 namespace Lodestone.Nbt
 {
     public class TagShort : Tag
     {
-        public short Value { get; private set; }
+        public short Value { get; set; }
         public override TagType Type => TagType.TAG_Short;
 
         public TagShort(EndiannessAwareBinaryReader reader, bool readNames) => this.Read(reader, readNames);
+        public TagShort(string name, short value)
+        {
+            this.Name = name;
+            this.Value = value;
+        }
 
         public override void Read(EndiannessAwareBinaryReader reader, bool readName)
         {

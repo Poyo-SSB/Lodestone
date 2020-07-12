@@ -1,5 +1,4 @@
 ﻿using Lodestone.Utility;
-using System.Text;
 
 namespace Lodestone.Nbt
 {
@@ -7,10 +6,16 @@ namespace Lodestone.Nbt
     {
         public override TagType Type => TagType.TAG_List;
 
-        public TagType ListType { get; private set; }
-        private Tag[] value;
+        public TagType ListType { get; set; }
+        public Tag[] Value { get; set; }
 
         public TagList(EndiannessAwareBinaryReader reader, bool readNames) => this.Read(reader, readNames);
+        public TagList(string name, TagType type, Tag[] value)
+        {
+            this.Name = name;
+            this.ListType = type;
+            this.Value = value;
+        }
 
         public override void Read(EndiannessAwareBinaryReader reader, bool readName)
         {
@@ -19,47 +24,47 @@ namespace Lodestone.Nbt
             this.ListType = (TagType)reader.ReadByte();
             int length = reader.ReadInt32();
 
-            this.value = new Tag[length];
+            this.Value = new Tag[length];
 
             for (int i = 0; i < length; i++)
             {
                 switch (this.ListType)
                 {
                     case TagType.TAG_Byte:
-                        this.value[i] = new TagByte(reader, false);
+                        this.Value[i] = new TagByte(reader, false);
                         break;
                     case TagType.TAG_Short:
-                        this.value[i] = new TagShort(reader, false);
+                        this.Value[i] = new TagShort(reader, false);
                         break;
                     case TagType.TAG_Int:
-                        this.value[i] = new TagInt(reader, false);
+                        this.Value[i] = new TagInt(reader, false);
                         break;
                     case TagType.TAG_Long:
-                        this.value[i] = new TagLong(reader, false);
+                        this.Value[i] = new TagLong(reader, false);
                         break;
                     case TagType.TAG_Float:
-                        this.value[i] = new TagFloat(reader, false);
+                        this.Value[i] = new TagFloat(reader, false);
                         break;
                     case TagType.TAG_Double:
-                        this.value[i] = new TagDouble(reader, false);
+                        this.Value[i] = new TagDouble(reader, false);
                         break;
                     case TagType.TAG_Byte_Array:
-                        this.value[i] = new TagByteArray(reader, false);
+                        this.Value[i] = new TagByteArray(reader, false);
                         break;
                     case TagType.TAG_String:
-                        this.value[i] = new TagString(reader, false);
+                        this.Value[i] = new TagString(reader, false);
                         break;
                     case TagType.TAG_List:
-                        this.value[i] = new TagList(reader, false);
+                        this.Value[i] = new TagList(reader, false);
                         break;
                     case TagType.TAG_Compound:
-                        this.value[i] = new TagCompound(reader, false);
+                        this.Value[i] = new TagCompound(reader, false);
                         break;
                     case TagType.TAG_Int_Array:
-                        this.value[i] = new TagIntArray(reader, false);
+                        this.Value[i] = new TagIntArray(reader, false);
                         break;
                     case TagType.TAG_Long_Array:
-                        this.value[i] = new TagLongArray(reader, false);
+                        this.Value[i] = new TagLongArray(reader, false);
                         break;
                 }
             }
@@ -69,11 +74,11 @@ namespace Lodestone.Nbt
         {
             base.Write(writer, writeName);
             writer.Write((byte)this.ListType);
-            writer.Write(this.value.Length);
+            writer.Write(this.Value.Length);
 
-            for (int i = 0; i < this.value.Length; i++)
+            for (int i = 0; i < this.Value.Length; i++)
             {
-                this.value[i].Write(writer, false);
+                this.Value[i].Write(writer, false);
             }
         }
 
@@ -91,10 +96,10 @@ namespace Lodestone.Nbt
         public TagLongArray[] GetArrayLongArray() => this.GetArray<TagLongArray>();
 
         private T[] GetArray<T>() where T : Tag {
-            T[] returnedValue = new T[this.value.Length];
+            T[] returnedValue = new T[this.Value.Length];
             for (int i = 0; i < returnedValue.Length; i++)
             {
-                returnedValue[i] = (T)this.value[i];
+                returnedValue[i] = (T)this.Value[i];
             }
             return returnedValue;
         }
